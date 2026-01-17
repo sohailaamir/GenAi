@@ -1,0 +1,48 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: genai-router
+  labels:
+    app: genai-router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: genai-router
+  template:
+    metadata:
+      labels:
+        app: genai-router
+    spec:
+      containers:
+        - name: genai-router
+          image: genai-router:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-secret
+                  key: HF_TOKEN
+            - name: HF_REPO_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: genai-config
+                  key: HF_REPO_ID
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: genai-router-svc
+spec:
+  selector:
+    app: genai-router
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8501
+      protocol: TCP
+      name: http

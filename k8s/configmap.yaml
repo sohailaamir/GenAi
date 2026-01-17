@@ -1,0 +1,7 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: genai-config
+data:
+  HF_REPO_ID: "openai/gpt-oss-120b"
